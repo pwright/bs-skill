@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Any, List, Dict
+from typing import Any, List, Dict, Optional
 
 @dataclass
 class Message:
@@ -14,6 +14,13 @@ class ToolCall:
 @dataclass
 class SkillRequest:
     messages: List[Message]
+
+@dataclass
+class SkillPlan:
+    user_text: str
+    file_path: Optional[str]
+    want_series: bool
+    want_wardley: bool
 
 @dataclass
 class SkillResult:

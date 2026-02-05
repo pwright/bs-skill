@@ -7,6 +7,7 @@ from skill.adapters.codex import run_with_codex
 def main():
     p = argparse.ArgumentParser()
     p.add_argument("--provider", choices=["claude", "codex"], required=True)
+    p.add_argument("--output", help="Write output to a file instead of stdout")
     args = p.parse_args()
 
     text = sys.stdin.read()
@@ -17,7 +18,14 @@ def main():
     else:
         out = run_with_codex(text)
 
-    sys.stdout.write(out)
+    if not out.endswith("\n"):
+        out += "\n"
+
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as handle:
+            handle.write(out)
+    else:
+        sys.stdout.write(out)
 
 if __name__ == "__main__":
     main()

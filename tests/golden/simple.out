@@ -1,1 +1,111 @@
-hello world
+{
+  "id": "payment-processing-platform",
+  "title": "Payment Processing Platform Blockscape",
+  "abstract": "Users want reliable payment processing platform outcomes delivered through clear experiences, supported by core capabilities, data services, and dependable infrastructure.",
+  "categories": [
+    {
+      "id": "customer-experience",
+      "title": "Customer Experience",
+      "items": [
+        {
+          "id": "checkout-ui",
+          "name": "Checkout UI",
+          "deps": [
+            "fraud-detection",
+            "kyc-aml"
+          ]
+        },
+        {
+          "id": "payment-api",
+          "name": "Payment API",
+          "deps": [
+            "fraud-detection",
+            "kyc-aml"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "risk-compliance",
+      "title": "Risk & Compliance",
+      "items": [
+        {
+          "id": "fraud-detection",
+          "name": "Fraud Detection",
+          "deps": [
+            "authorization",
+            "settlement"
+          ]
+        },
+        {
+          "id": "kyc-aml",
+          "name": "KYC AML",
+          "deps": [
+            "authorization",
+            "settlement"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "core-processing",
+      "title": "Core Processing",
+      "items": [
+        {
+          "id": "authorization",
+          "name": "Authorization",
+          "deps": [
+            "reporting",
+            "reconciliation"
+          ]
+        },
+        {
+          "id": "settlement",
+          "name": "Settlement",
+          "deps": [
+            "reporting",
+            "reconciliation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "data-analytics",
+      "title": "Data & Analytics",
+      "items": [
+        {
+          "id": "reporting",
+          "name": "Reporting",
+          "deps": [
+            "databases",
+            "messaging"
+          ]
+        },
+        {
+          "id": "reconciliation",
+          "name": "Reconciliation",
+          "deps": [
+            "databases",
+            "messaging"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "infrastructure",
+      "title": "Infrastructure",
+      "items": [
+        {
+          "id": "databases",
+          "name": "Databases",
+          "deps": []
+        },
+        {
+          "id": "messaging",
+          "name": "Messaging",
+          "deps": []
+        }
+      ]
+    }
+  ]
+}
