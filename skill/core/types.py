@@ -21,6 +21,7 @@ class SkillPlan:
     file_path: Optional[str]
     want_series: bool
     want_wardley: bool
+    deterministic: bool
 
 @dataclass
 class SkillResult:

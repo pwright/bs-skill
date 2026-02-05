@@ -2,7 +2,7 @@ from subprocess import run, PIPE
 
 def test_simple():
     p = run(
-        ["python", "-m", "skill.cli", "--provider", "codex"],
+        ["python", "-m", "skill.cli", "--provider", "codex", "--deterministic"],
         input=open("tests/golden/simple.in").read(),
         text=True,
         stdout=PIPE

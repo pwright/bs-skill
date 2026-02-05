@@ -1,10 +1,10 @@
 import json
-import os
 import re
 import unicodedata
 from collections import Counter
 from typing import Dict, List, Optional, Tuple
 
+from .source import load_source
 from .types import SkillPlan
 
 _STOPWORDS = {
@@ -126,18 +126,6 @@ def _extract_outline(lines: List[str]) -> List[Tuple[str, List[str]]]:
                     items.append(match.group(1).strip())
         categories.append((title, items))
     return categories
-
-
-def _title_from_content(lines: List[str]) -> Optional[str]:
-    for line in lines:
-        match = re.match(r"^\s*#\s+(.+)", line)
-        if match:
-            return match.group(1).strip()
-    for line in lines:
-        cleaned = line.strip()
-        if cleaned:
-            return cleaned[:80]
-    return None
 
 
 def _fallback_abstract(title_hint: str) -> str:
@@ -283,16 +271,7 @@ def _generate_model(text: str, title_hint: str, want_wardley: bool) -> Dict[str,
 
 
 def execute(plan: SkillPlan) -> str:
-    source_text = plan.user_text
-    title_hint = "Blockscape Map"
-    if plan.file_path:
-        with open(plan.file_path, "r", encoding="utf-8", errors="ignore") as handle:
-            source_text = handle.read()
-        title_hint = os.path.splitext(os.path.basename(plan.file_path))[0].replace("_", " ").replace("-", " ").title()
-    content_lines = source_text.splitlines()
-    detected_title = _title_from_content(content_lines)
-    if detected_title:
-        title_hint = detected_title
+    source_text, title_hint = load_source(plan)
 
     if plan.want_series:
         models: List[Dict[str, object]] = []

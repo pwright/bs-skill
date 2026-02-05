@@ -36,7 +36,7 @@ def _find_existing_path(text: str) -> Optional[str]:
 
     return None
 
-def plan(req: SkillRequest) -> SkillPlan:
+def plan(req: SkillRequest, deterministic: bool = False) -> SkillPlan:
     user_text = req.messages[-1].content.strip()
     file_path = _find_existing_path(user_text)
     want_series = bool(re.search(r"\bseries\b", user_text, re.IGNORECASE))
@@ -46,4 +46,5 @@ def plan(req: SkillRequest) -> SkillPlan:
         file_path=file_path,
         want_series=want_series,
         want_wardley=want_wardley,
+        deterministic=deterministic,
     )
