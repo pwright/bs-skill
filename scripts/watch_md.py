@@ -55,42 +55,69 @@ def write_output(source_path: str, output: str) -> str:
     return out_path
 
 
-def scan_files(root: str) -> Dict[str, Tuple[int, int]]:
+def scan_files(root: str, min_bytes: int) -> Dict[str, Tuple[int, int]]:
     seen: Dict[str, Tuple[int, int]] = {}
     for path in iter_md_files(root):
         try:
-            seen[path] = file_signature(path)
+            sig = file_signature(path)
+            if sig[1] < min_bytes:
+                continue
+            seen[path] = sig
         except FileNotFoundError:
             continue
     return seen
 
 
+def confirm_initial_processing(file_count: int, min_bytes: int) -> bool:
+    suffix = "" if file_count == 1 else "s"
+    prompt = (
+        f"--initial will process {file_count} markdown file{suffix} "
+        f"(>= {min_bytes} bytes). Continue? [y/N]: "
+    )
+    try:
+        response = input(prompt).strip().lower()
+    except EOFError:
+        return False
+    except KeyboardInterrupt:
+        print(file=sys.stderr)
+        return False
+    return response in {"y", "yes"}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", default=".", help="Root directory to watch")
-    parser.add_argument("--provider", choices=["claude", "codex", "codex-cli"], default="codex")
+    parser.add_argument("--provider", choices=["claude", "codex", "codex-cli"], default="codex-cli")
     parser.add_argument("--interval", type=float, default=1.0, help="Polling interval in seconds")
+    parser.add_argument("--min-bytes", type=int, default=5000, help="Ignore markdown files smaller than this many bytes")
     parser.add_argument("--initial", action="store_true", help="Process existing files on startup")
     parser.add_argument("--verbose", action="store_true", help="Log processed files to stderr")
     parser.add_argument("--deterministic", action="store_true", help="Use deterministic output without calling an LLM")
     args = parser.parse_args()
+    if args.min_bytes < 0:
+        parser.error("--min-bytes must be >= 0")
 
     root = os.path.abspath(args.root)
-    seen = scan_files(root)
+    seen = scan_files(root, args.min_bytes)
 
     if args.initial:
-        for path in sorted(seen.keys()):
-            try:
-                output = generate_output(path, args.provider, args.deterministic)
-                out_path = write_output(path, output)
-                if args.verbose:
-                    print(f"Wrote {out_path}", file=sys.stderr)
-            except Exception as exc:
-                print(f"ERROR: failed to process {path}: {exc}", file=sys.stderr)
+        initial_paths = sorted(seen.keys())
+        if confirm_initial_processing(len(initial_paths), args.min_bytes):
+            for path in initial_paths:
+                try:
+                    output = generate_output(path, args.provider, args.deterministic)
+                    out_path = write_output(path, output)
+                    if args.verbose:
+                        print(f"Wrote {out_path}", file=sys.stderr)
+                except Exception as exc:
+                    print(f"ERROR: failed to process {path}: {exc}", file=sys.stderr)
+        else:
+            print("Cancelled", file=sys.stderr)
+            return 1
 
     while True:
         time.sleep(args.interval)
-        current = scan_files(root)
+        current = scan_files(root, args.min_bytes)
 
         for path, sig in current.items():
             if path not in seen or seen[path] != sig:

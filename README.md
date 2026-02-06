@@ -69,13 +69,15 @@ cat tests/golden/simple.in | python -m skill.cli --provider claude --determinist
 Generate `.bs` files alongside any `.md`/`.markdown` file that changes:
 
 ```bash
-python scripts/watch_md.py --root /path/to/docs --provider codex --interval 1 --verbose
+python scripts/watch_md.py --root /path/to/docs --provider codex-cli --interval 1 --min-bytes 1000 --verbose
 ```
 
 Optional flags:
-- `--initial` to generate `.bs` files for existing markdown on startup
+- `--initial` to generate `.bs` files for existing markdown on startup (shows file count and asks for confirmation)
 - `--provider` to choose `codex`, `codex-cli`, or `claude`
+  Default is `codex-cli` (uses your local Codex CLI login/session)
 - `--interval` to adjust polling frequency (seconds)
+- `--min-bytes` to skip markdown files smaller than this size (defaults to `5000`)
 - `--deterministic` to avoid LLM calls
 
 ### Prompt template

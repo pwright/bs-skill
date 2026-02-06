@@ -1,5 +1,6 @@
 import json
 import os
+import urllib.error
 import urllib.request
 
 from skill.core.executor import execute
@@ -30,8 +31,26 @@ def _call_openai_chat(prompt: str) -> str:
     req = urllib.request.Request(
         url, data=json.dumps(payload).encode("utf-8"), headers=headers
     )
-    with urllib.request.urlopen(req, timeout=120) as resp:
-        data = json.loads(resp.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(req, timeout=120) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = ""
+        try:
+            detail = exc.read().decode("utf-8", "replace").strip()
+        except Exception:
+            detail = ""
+        if exc.code == 401:
+            raise RuntimeError(
+                "HTTP 401 Unauthorized for provider 'codex'. "
+                "This provider uses OPENAI_API_KEY auth. "
+                "If you are logged into Codex CLI, run with --provider codex-cli instead."
+            ) from exc
+        raise RuntimeError(
+            f"HTTP error from provider 'codex' ({exc.code}): {detail or exc.reason}"
+        ) from exc
+    except urllib.error.URLError as exc:
+        raise RuntimeError(f"Network error from provider 'codex': {exc}") from exc
     try:
         return data["choices"][0]["message"]["content"]
     except (KeyError, IndexError, TypeError) as exc:
