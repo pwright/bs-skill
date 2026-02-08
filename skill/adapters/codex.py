@@ -32,7 +32,7 @@ def _call_openai_chat(prompt: str) -> str:
         url, data=json.dumps(payload).encode("utf-8"), headers=headers
     )
     try:
-        with urllib.request.urlopen(req, timeout=120) as resp:
+        with urllib.request.urlopen(req, timeout=1020) as resp:
             data = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = ""

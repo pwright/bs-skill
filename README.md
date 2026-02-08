@@ -21,11 +21,30 @@ This is a minimal, production-shaped skeleton for building a single "skill" that
 
 LLM mode (default):
 
+#### Use Ollama at `http://localhost:11434/`
+
+Make sure Ollama is running locally, then pull the model you want to use:
+
+```bash
+ollama pull llama3.1
+```
+
+Point the `codex` provider at Ollama's OpenAI-compatible endpoint:
+
 ```bash
 export OPENAI_BASE_URL=http://localhost:11434/v1
 export OPENAI_API_KEY=ollama
-export OPENAI_MODEL=llama3.1
+export OPENAI_MODEL=llama3.2
+```
 
+`OPENAI_BASE_URL` should include `/v1` because this adapter sends requests to `<base>/chat/completions`.
+
+Run with the local endpoint:
+
+```bash
+OPENAI_BASE_URL=http://localhost:11434/v1 \
+OPENAI_API_KEY=ollama \
+OPENAI_MODEL=llama3.2 \
 cat tests/golden/simple.in | python -m skill.cli --provider codex
 ```
 

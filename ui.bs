@@ -1,0 +1,147 @@
+[
+  {
+    "id": "language-interface-stack",
+    "title": "The Language-First Interface Stack",
+    "abstract": "This map illustrates the collapse of traditional complex GUIs into a single prompt-based interaction model, showing how user intent is orchestrated through agents and APIs.",
+    "categories": [
+      {
+        "id": "interaction-surface",
+        "title": "Interaction Surface",
+        "items": [
+          {
+            "id": "chat-input-box",
+            "name": "The Prompt (Chat Box)",
+            "deps": ["structured-prompting", "hybrid-artifacts"],
+            "color": "#FFFFFF"
+          },
+          {
+            "id": "hybrid-artifacts",
+            "name": "Hybrid UI (Artifacts/Canvas)",
+            "deps": ["agentic-orchestration"],
+            "external": "https://openai.com/blog/introducing-canvas"
+          }
+        ]
+      },
+      {
+        "id": "intent-specification",
+        "title": "Intent Specification",
+        "items": [
+          {
+            "id": "structured-prompting",
+            "name": "JSON/Schema Specs",
+            "deps": ["agentic-orchestration"],
+            "color": "#E0E0E0"
+          },
+          {
+            "id": "natural-language-intent",
+            "name": "Natural Language Request",
+            "deps": ["agentic-orchestration"]
+          }
+        ]
+      },
+      {
+        "id": "orchestration-layer",
+        "title": "Orchestration & Logic",
+        "items": [
+          {
+            "id": "agentic-orchestration",
+            "name": "Agent Swarms / ClaudeCode",
+            "deps": ["api-tools", "llm-core"],
+            "external": "https://www.anthropic.com/claude"
+          },
+          {
+            "id": "procedural-inference",
+            "name": "Step Inference",
+            "deps": ["llm-core"]
+          }
+        ]
+      },
+      {
+        "id": "enabling-infra",
+        "title": "Enabling Infrastructure",
+        "items": [
+          {
+            "id": "api-tools",
+            "name": "Integrated API Tools",
+            "deps": []
+          },
+          {
+            "id": "llm-core",
+            "name": "Foundation Models",
+            "deps": []
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "cognitive-architecture-prompting",
+    "title": "Cognitive Architecture of Prompting",
+    "abstract": "A visualization of the mental shift from 'Recognition' (GUI) to 'Specification' (LUI) and the resulting impact on human critical thinking and problem-solving.",
+    "categories": [
+      {
+        "id": "mental-outcomes",
+        "title": "Intellectual Habits",
+        "items": [
+          {
+            "id": "problem-solving",
+            "name": "Independent Problem Solving",
+            "deps": ["critical-thinking", "planning-mentality"],
+            "color": "#FF0000"
+          },
+          {
+            "id": "creative-exploration",
+            "name": "Iterative Exploration",
+            "deps": ["ambiguity-tolerance"]
+          }
+        ]
+      },
+      {
+        "id": "thinking-modes",
+        "title": "Thinking Modes",
+        "items": [
+          {
+            "id": "critical-thinking",
+            "name": "Critical Evaluation",
+            "deps": ["cognitive-offloading"]
+          },
+          {
+            "id": "planning-mentality",
+            "name": "Specification & Planning",
+            "deps": ["structured-input"]
+          },
+          {
+            "id": "ambiguity-tolerance",
+            "name": "Ambiguity Management",
+            "deps": []
+          }
+        ]
+      },
+      {
+        "id": "cognitive-mechanics",
+        "title": "Cognitive Mechanics",
+        "items": [
+          {
+            "id": "cognitive-offloading",
+            "name": "Cognitive Offloading",
+            "deps": ["einstellung-effect"],
+            "color": "#000000"
+          },
+          {
+            "id": "structured-input",
+            "name": "Mental Models (As Code)",
+            "deps": []
+          },
+          {
+            "id": "einstellung-effect",
+            "name": "The Einstellung Effect",
+            "deps": []
+          }
+        ]
+      }
+    ],
+    "links": [
+      { "from": "problem-solving", "to": "cognitive-offloading" }
+    ]
+  }
+]
