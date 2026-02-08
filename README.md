@@ -80,6 +80,9 @@ Optional flags:
 - `--min-bytes` to skip markdown files smaller than this size (defaults to `5000`)
 - `--deterministic` to avoid LLM calls
 
+Watcher behavior:
+- Files are skipped when a sibling `.bs` file already exists. Delete or rename the `.bs` file to regenerate.
+
 ### Prompt template
 
 LLM mode loads instructions from `prompt.md` at the repo root. Override with:

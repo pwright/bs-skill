@@ -34,6 +34,11 @@ def file_signature(path: str) -> Tuple[int, int]:
     return (stat.st_mtime_ns, stat.st_size)
 
 
+def output_exists_for(path: str) -> bool:
+    base, _ = os.path.splitext(path)
+    return os.path.exists(f"{base}.bs")
+
+
 def generate_output(path: str, provider: str, deterministic: bool) -> str:
     prompt = f"Generate a blockscape map for the domain of\nfile: {path}"
     if provider == "claude":
@@ -59,6 +64,8 @@ def scan_files(root: str, min_bytes: int) -> Dict[str, Tuple[int, int]]:
     seen: Dict[str, Tuple[int, int]] = {}
     for path in iter_md_files(root):
         try:
+            if output_exists_for(path):
+                continue
             sig = file_signature(path)
             if sig[1] < min_bytes:
                 continue
