@@ -92,15 +92,26 @@ python scripts/watch_md.py --root /path/to/docs --provider codex-cli --interval 
 ```
 
 Optional flags:
-- `--initial` to generate `.bs` files for existing markdown on startup (shows file count and asks for confirmation)
+- `--initial` to generate outputs for existing markdown on startup (shows file count and asks for confirmation)
 - `--provider` to choose `codex`, `codex-cli`, or `claude`
   Default is `codex-cli` (uses your local Codex CLI login/session)
 - `--interval` to adjust polling frequency (seconds)
 - `--min-bytes` to skip markdown files smaller than this size (defaults to `5000`)
 - `--deterministic` to avoid LLM calls
+- `--output-format` to choose `bs` (default) or `md`
+  - `md` writes alongside the source as `<name>.bs.md`, wrapping the JSON in a markdown template.
+  - Default template:
+    ```
+    # Blockscape Map of {mdfilename}
+
+    ```blockscape
+    {json}
+    ```
+    ```
+  - Override with `--md-template /path/to/template.md` (must include `{json}` placeholder; `{mdfilename}` is also available).
 
 Watcher behavior:
-- Files are skipped when a sibling `.bs` file already exists. Delete or rename the `.bs` file to regenerate.
+- Files are skipped when a sibling output file already exists (`.bs` or `.bs.md` depending on format). Delete or rename it to regenerate.
 
 ### Prompt template
 
