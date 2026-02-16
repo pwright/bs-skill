@@ -32,6 +32,9 @@ def iter_md_files(root: str) -> Iterable[str]:
         for name in filenames:
             if name.startswith("."):
                 continue
+            if name.endswith("-bs.md"):
+                # Skip generated markdown outputs
+                continue
             ext = os.path.splitext(name)[1].lower()
             if ext in {".md", ".markdown"}:
                 yield os.path.join(dirpath, name)
@@ -45,7 +48,7 @@ def file_signature(path: str) -> Tuple[int, int]:
 def build_output_path(source_path: str, output_format: str) -> str:
     base, _ = os.path.splitext(source_path)
     if output_format == "md":
-        return f"{base}.bs.md"
+        return f"{base}-bs.md"
     return f"{base}.bs"
 
 

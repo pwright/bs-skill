@@ -30,16 +30,28 @@ def test_scan_files_skips_when_bs_output_exists(tmp_path):
 def test_scan_files_skips_when_md_output_exists(tmp_path):
     source = tmp_path / "example.md"
     source.write_text("0123456789", encoding="utf-8")
-    (tmp_path / "example.bs.md").write_text("# existing", encoding="utf-8")
+    (tmp_path / "example-bs.md").write_text("# existing", encoding="utf-8")
 
     seen = scan_files(str(tmp_path), min_bytes=1, output_format="md")
 
     assert str(source) not in seen
 
 
-def test_build_output_path_uses_bs_md_suffix():
+def test_iter_md_files_skips_generated_dash_bs(tmp_path):
+    real = tmp_path / "real.md"
+    real.write_text("content", encoding="utf-8")
+    generated = tmp_path / "note-bs.md"
+    generated.write_text("generated", encoding="utf-8")
+
+    seen = scan_files(str(tmp_path), min_bytes=1, output_format="md")
+
+    assert str(real) in seen
+    assert str(generated) not in seen
+
+
+def test_build_output_path_uses_dash_bs_md_suffix():
     path = build_output_path("/docs/topic.md", output_format="md")
-    assert path == "/docs/topic.bs.md"
+    assert path == "/docs/topic-bs.md"
 
 
 def test_format_output_wraps_json_in_default_template():

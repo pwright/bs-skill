@@ -99,7 +99,7 @@ Optional flags:
 - `--min-bytes` to skip markdown files smaller than this size (defaults to `5000`)
 - `--deterministic` to avoid LLM calls
 - `--output-format` to choose `bs` (default) or `md`
-  - `md` writes alongside the source as `<name>.bs.md`, wrapping the JSON in a markdown template.
+  - `md` writes alongside the source as `<name>-bs.md`, wrapping the JSON in a markdown template.
   - Default template:
     ```
     # Blockscape Map of {mdfilename}
@@ -111,7 +111,8 @@ Optional flags:
   - Override with `--md-template /path/to/template.md` (must include `{json}` placeholder; `{mdfilename}` is also available).
 
 Watcher behavior:
-- Files are skipped when a sibling output file already exists (`.bs` or `.bs.md` depending on format). Delete or rename it to regenerate.
+- Files are skipped when a sibling output file already exists (`.bs` or `-bs.md` depending on format). Delete or rename it to regenerate.
+- Source files ending with `-bs.md` are ignored to prevent reprocessing generated outputs.
 
 ### Prompt template
 
