@@ -1,4 +1,6 @@
 import importlib.util
+import os
+import time
 from pathlib import Path
 
 
@@ -93,3 +95,18 @@ def test_format_output_requires_placeholder(tmp_path):
         assert "placeholder" in str(exc)
     else:
         raise AssertionError("Expected ValueError for missing placeholder")
+
+
+def test_scan_files_skips_older_than_max_age(tmp_path):
+    recent = tmp_path / "recent.md"
+    recent.write_text("0123456789", encoding="utf-8")
+
+    old = tmp_path / "old.md"
+    old.write_text("content", encoding="utf-8")
+    ten_days_ago = time.time() - 10 * 24 * 60 * 60
+    os.utime(old, (ten_days_ago, ten_days_ago))
+
+    seen = scan_files(str(tmp_path), min_bytes=1, max_age_days=5)
+
+    assert str(recent) in seen
+    assert str(old) not in seen

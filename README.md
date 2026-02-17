@@ -97,6 +97,7 @@ Optional flags:
   Default is `codex-cli` (uses your local Codex CLI login/session)
 - `--interval` to adjust polling frequency (seconds)
 - `--min-bytes` to skip markdown files smaller than this size (defaults to `5000`)
+- `--max-age-days` to skip markdown files older than this many days (based on mtime)
 - `--deterministic` to avoid LLM calls
 - `--output-format` to choose `bs` (default) or `md`
   - `md` writes alongside the source as `<name>-bs.md`, wrapping the JSON in a markdown template.

@@ -110,8 +110,13 @@ def scan_files(
     root: str,
     min_bytes: int,
     output_format: str = "bs",
+    max_age_days: Optional[float] = None,
 ) -> Dict[str, Tuple[int, int]]:
     seen: Dict[str, Tuple[int, int]] = {}
+    cutoff_ns: Optional[int] = None
+    if max_age_days is not None:
+        cutoff_ns = time.time_ns() - int(max_age_days * 24 * 60 * 60 * 1_000_000_000)
+
     for path in iter_md_files(root):
         try:
             if output_exists_for(path, output_format=output_format):
@@ -119,17 +124,25 @@ def scan_files(
             sig = file_signature(path)
             if sig[1] < min_bytes:
                 continue
+            if cutoff_ns is not None and sig[0] < cutoff_ns:
+                continue
             seen[path] = sig
         except FileNotFoundError:
             continue
     return seen
 
 
-def confirm_initial_processing(file_count: int, min_bytes: int) -> bool:
+def confirm_initial_processing(
+    file_count: int, min_bytes: int, max_age_days: Optional[float]
+) -> bool:
     suffix = "" if file_count == 1 else "s"
+    age_clause = ""
+    if max_age_days is not None:
+        plural = "day" if max_age_days == 1 else "days"
+        age_clause = f", modified within {max_age_days:g} {plural}"
     prompt = (
         f"--initial will process {file_count} markdown file{suffix} "
-        f"(>= {min_bytes} bytes). Continue? [y/N]: "
+        f"(>= {min_bytes} bytes{age_clause}). Continue? [y/N]: "
     )
     try:
         response = input(prompt).strip().lower()
@@ -147,6 +160,12 @@ def main() -> int:
     parser.add_argument("--provider", choices=["claude", "codex", "codex-cli"], default="codex-cli")
     parser.add_argument("--interval", type=float, default=1.0, help="Polling interval in seconds")
     parser.add_argument("--min-bytes", type=int, default=5000, help="Ignore markdown files smaller than this many bytes")
+    parser.add_argument(
+        "--max-age-days",
+        type=float,
+        default=None,
+        help="Ignore markdown files last modified more than this many days ago",
+    )
     parser.add_argument("--initial", action="store_true", help="Process existing files on startup")
     parser.add_argument("--verbose", action="store_true", help="Log processed files to stderr")
     parser.add_argument("--deterministic", action="store_true", help="Use deterministic output without calling an LLM")
@@ -158,13 +177,20 @@ def main() -> int:
     args = parser.parse_args()
     if args.min_bytes < 0:
         parser.error("--min-bytes must be >= 0")
+    if args.max_age_days is not None and args.max_age_days < 0:
+        parser.error("--max-age-days must be >= 0")
 
     root = os.path.abspath(args.root)
-    seen = scan_files(root, args.min_bytes, output_format=args.output_format)
+    seen = scan_files(
+        root,
+        args.min_bytes,
+        output_format=args.output_format,
+        max_age_days=args.max_age_days,
+    )
 
     if args.initial:
         initial_paths = sorted(seen.keys())
-        if confirm_initial_processing(len(initial_paths), args.min_bytes):
+        if confirm_initial_processing(len(initial_paths), args.min_bytes, args.max_age_days):
             for path in initial_paths:
                 try:
                     output = generate_output(path, args.provider, args.deterministic)
@@ -184,7 +210,12 @@ def main() -> int:
 
     while True:
         time.sleep(args.interval)
-        current = scan_files(root, args.min_bytes, output_format=args.output_format)
+        current = scan_files(
+            root,
+            args.min_bytes,
+            output_format=args.output_format,
+            max_age_days=args.max_age_days,
+        )
 
         for path, sig in current.items():
             if path not in seen or seen[path] != sig:
